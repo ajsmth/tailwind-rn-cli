@@ -1,6 +1,6 @@
 {
 	"name": "tailwind-rn-cli",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"license": "MIT",
 	"bin": "./build/cli.js",
 	"engines": {
@@ -13,7 +13,8 @@
 	},
 	"files": [
 		"build",
-		"tailwind.css"
+		"tailwind.css",
+		"tailwind.js"
 	],
 	"dependencies": {
 		"css": "^2.2.4",
