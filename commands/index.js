@@ -19,7 +19,8 @@ function copyTailwind(output) {
 
 const cssPath = path.resolve(__dirname, "../../tailwind.css");
 
-function GenerateTailwind({ config, output }) {
+/// scaffold out react-native styles based on your tailwind.config.js
+const GenerateTailwind = ({ config, output }) => {
   const [text, setText] = React.useState("");
 
   React.useEffect(() => {
@@ -49,16 +50,18 @@ function GenerateTailwind({ config, output }) {
           setText(`Done! Files are located in ${dir}`);
         })
         .catch((err) => {
-          setText("Something went wrong: ", err);
+          setText("Something went wrong: ", err.toString());
         });
     });
   }, [config, output]);
 
   return <Text>{text}</Text>;
-}
+};
 
 GenerateTailwind.propTypes = {
+  /// path to the tailwind.config.js file
   config: PropTypes.string.isRequired,
+  /// path to the output directory - e.g ./src/styles
   output: PropTypes.string.isRequired,
 };
 
