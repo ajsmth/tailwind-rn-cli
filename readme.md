@@ -31,7 +31,7 @@ $ yarn add tailwind-rn-cli
 
 ```
 $ tailwind-rn-cli --help
-tailwind-rn-cli --output ./styles --config tailwind.config.js
+tailwind-rn-cli --output ./styles --config tailwind.config.js [--logErrors]
 ```
 
 
