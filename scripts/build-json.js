@@ -8,17 +8,14 @@ const remToPx = (value) => `${parseFloat(value) * 16}px`;
 const getStyles = (rule) => {
   const styles = rule.declarations
     .filter(({ property, value }) => {
-      // skip usage of vars I don't think they do anything
-      if (value.includes("var(")) {
-        return false;
-      }
-
-      // remove vars
       if (property.includes("--")) {
         return false;
       }
 
-      // Skip line-height utilities without units
+      if (value.includes("var")) {
+        return false;
+      }
+
       if (property === "line-height") {
         if (!value.endsWith("rem")) {
           return false;
@@ -32,24 +29,22 @@ const getStyles = (rule) => {
         return [property, remToPx(value)];
       }
 
-      // if (property === "font-family") {
-      //   // return the first declared font if there are multiple
-      //   // multiple fonts are not supported as fontFamily prop for style
-      //   value = value.split(", ")[0];
-      // }
-
       return [property, value];
     });
 
   let style = {};
+  let error = null;
+
   try {
     style = cssToReactNative(styles);
-  } catch (error) {
-		const selector = rule.selectors[0]
-		console.log(`Error: ${selector}: ${error.message}`)
-	}
+  } catch (err) {
+    error = err;
+  }
 
-  return style;
+  return {
+    style,
+    error,
+  };
 };
 
 const supportedUtilities = [
@@ -126,16 +121,21 @@ const isUtilitySupported = (utility) => {
   return false;
 };
 
-function buildJson(source) {
+function buildJson(source, logErrors) {
   const { stylesheet } = css.parse(source);
   const styles = {};
+  let errors = [];
   for (const rule of stylesheet.rules) {
     if (rule.type === "rule") {
       for (const selector of rule.selectors) {
         const utility = selector.replace(/^\./, "").replace("\\/", "/");
 
         if (isUtilitySupported(utility)) {
-          styles[utility] = getStyles(rule);
+          const { style, error } = getStyles(rule);
+          styles[utility] = style;
+          if (error) {
+            errors.push(`Error: ${utility}: ${error.message}`);
+          }
         }
       }
     }
@@ -145,6 +145,12 @@ function buildJson(source) {
   styles.underline = { textDecorationLine: "underline" };
   styles["line-through"] = { textDecorationLine: "line-through" };
   styles["no-underline"] = { textDecorationLine: "none" };
+
+  if (logErrors) {
+    errors.map((error) => {
+      console.log(error);
+    });
+  }
 
   return styles;
 }

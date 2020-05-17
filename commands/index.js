@@ -20,7 +20,7 @@ function copyTailwind(output) {
 const cssPath = path.resolve(__dirname, "../../tailwind.css");
 
 /// scaffold out react-native styles based on your tailwind.config.js
-const GenerateTailwind = ({ config, output }) => {
+const GenerateTailwind = ({ config, output, logErrors }) => {
   const [text, setText] = React.useState("");
 
   React.useEffect(() => {
@@ -34,7 +34,7 @@ const GenerateTailwind = ({ config, output }) => {
 
     setText("Building css");
     buildCss(cssPath, config).then(({ css }) => {
-      const json = buildJson(css);
+      const json = buildJson(css, logErrors);
 
       const writeCss = writeFile(path.resolve(dir, "styles.css"), css);
       const writeJson = writeFile(
@@ -63,6 +63,7 @@ GenerateTailwind.propTypes = {
   config: PropTypes.string.isRequired,
   /// path to the output directory - e.g ./src/styles
   output: PropTypes.string.isRequired,
+  logErrors: PropTypes.bool,
 };
 
 export default GenerateTailwind;
